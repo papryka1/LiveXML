@@ -15,11 +15,10 @@ router.get('/', auth.checkNotAuthenticated, (req, res) => {
 router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
     try {
         const userTables = await Datatable.find({"user": req.user._id}).sort({"dateCreated": -1}).exec()
-        console.table(userTables)
-        console.log(userTables)
         res.render('dashboard', {userTables: userTables})
     } catch (err) {
         console.log(err)
+        res.render('dashboard')
     }
 })
 

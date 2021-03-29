@@ -1,18 +1,25 @@
 <h1 class="mt-4">Dashboard</h1>
-<h3>Your DataTables</h3>
-<table class="table table-hover">
-<thead>
-    <tr>
-        <th scope="col">Table Name</th>
-        <th scope="col">Date Created</th>
-    </tr>
-</thead>
-<% userTables.forEach(datatable => { %>
-    <tbody>
-        <tr>
-            <th scope="row"><a href="datatables/<%= datatable._id %>"><%= datatable.tableName %></a></th>
-            <td><%= datatable.dateCreated %> </td>
-        </tr>
-    </tbody>
-<% }); %> 
-</table>
+<%= userTables %> 
+<% if(typeof userTables != 'undefined') { %>
+    <h3>Your DataTables</h3>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Table Name</th>
+                <th scope="col">Date Created</th>
+            </tr>
+        </thead>
+        <% userTables.forEach(datatable => { %>
+            <tbody>
+                <tr>
+                    <th scope="row"><a href="datatables/<%= datatable._id %>"><%= datatable.tableName %></a></th>
+                    <td><%= datatable.dateCreated %> </td>
+                </tr>
+            </tbody>
+        <% }); %> 
+    </table>
+<% } else { %>
+    <h4>No DataTables</h4>
+    <a href="/datatables/new">Create new DataTable</a>
+<% } %> 
+

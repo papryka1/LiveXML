@@ -48,10 +48,10 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 
         try {
             const newDataTable = await datatable.save()
-            //console.log("New Datatable ID: " + newDataTable.id)
             res.redirect(`datatables/${newDataTable.id}`)
         } catch (err) {
             console.log(err)
+            res.redirect('/dashboard')
         }
     } 
 })
@@ -60,10 +60,9 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const table = await Datatable.findById(req.params.id).exec()
-        //console.log(table)
         res.render('datatables/datatable', { datatable: table })
     } catch (err) {
-        console.log(err)
+        res.redirect('/dashboard')
     }
 })
 

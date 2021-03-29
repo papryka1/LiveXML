@@ -1,10 +1,10 @@
 <h2 id="title" class="text-center p-2">DataTable</h2>
 <div>   
     <div class="row justify-content-center">
-        <div class="col-sm-8">
-            <form action="/datatables/update" method="POST">
+        <div class="col-sm-9">
+            <form action="/datatables/update/<%= datatable._id %>" method="POST">
                 <div class="input-group pb-2">
-                    <input name="dataTableName" type="text" class="form-control" value="<%= datatable.tableName %> " disabled="">
+                    <input name="dataTableName" type="text" class="form-control" value="<%= datatable.tableName %>">
                 </div>
                 <% var valueFieldId = 0 %>
                 <% datatable.fields.forEach(field => { %>
@@ -22,9 +22,8 @@
                     </div>
                     <% valueFieldId++ %> 
                 <% }) %> 
-                
-    
-                <div class="d-flex justify-content-between mb-2">
+            
+                <div class="d-flex mb-2">
                     <button type="submit" class="btn btn-success">Submit DataTable</button>
                 </div>
                 <div class="input-group pb-2">
@@ -33,7 +32,12 @@
             </form>
         </div>  
         <div class="col-sm-3" style="background-color: red;">
-            asfd
+            Sharing Table
         </div> 
     </div> 
+    <div>
+        <form action="/datatables/delete/<%= datatable._id %>" method="POST">
+            <button type="submit" class="btn btn-danger">Delete DataTable</button>
+        </form>
+    </div>
 </div>
