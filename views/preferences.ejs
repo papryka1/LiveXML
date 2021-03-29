@@ -1,0 +1,17 @@
+<div class="form-group row">
+    <label for="staticName" class="col-sm-2 col-form-label">Name</label>
+    <div class="col-sm-10">
+      <input type="text" readonly="" class="form-control-plaintext" id="staticName" value="<%= user.name %> ">
+    </div>
+    <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+    <div class="col-sm-10">
+      <input type="text" readonly="" class="form-control-plaintext" id="staticEmail" value="<%= user.email %> ">
+    </div>
+</div>
+
+<div>
+    <% if(user.userType === "admin") { %> 
+        <hr />
+        <a href="/admin"><button class="btn btn-primary">Admin Panel</button></a>
+    <% } %> 
+</div>

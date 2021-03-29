@@ -1,0 +1,49 @@
+<script>
+    $("document").ready(function(){
+        $("#input-container").append($("#row-template").html());
+        $("#addRowButton").on("click", function(){
+            $("#input-container").append($("#row-template").html());
+            deleteRowBtnListener()
+        })
+
+        function deleteRowBtnListener(){
+            $(".deleteRowBtn").unbind().click(function(){
+                var r = confirm("You sure you want to delete this row?")
+                if(r == true) {
+                    $(this).parent().remove()
+                }
+                
+            })
+        }
+    })
+</script>
+
+<h2 id="title" class="text-center p-2">Create New DataTable</h2>
+<div>   
+    <form action="/datatables" method="POST">
+        <div class="input-group pb-2">
+            <input name="dataTableName" type="text" class="form-control" placeholder="New DataTable Name" required>
+        </div>
+
+        <div id="input-container"></div>
+
+        <div class="d-flex justify-content-between mb-2">
+            <button type="button" id="addRowButton" class="btn btn-primary">Add Line</button>
+            <button type="submit" class="btn btn-success">Submit DataTable</button>
+        </div>
+
+    </form>    
+</div>
+
+<div style="display: none;">
+    <div id="row-template">
+        <div class="input-group pb-2">
+            <input name="fieldName[]" type="text" class="form-control" placeholder="Field name" required>
+            <input name="fieldValue[]" type="text" class="form-control" placeholder="Value" required>
+            <button type="button" id="deleteRowBtn" class="btn btn-warning deleteRowBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
+
+

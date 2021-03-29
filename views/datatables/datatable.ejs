@@ -1,0 +1,39 @@
+<h2 id="title" class="text-center p-2">DataTable</h2>
+<div>   
+    <div class="row justify-content-center">
+        <div class="col-sm-8">
+            <form action="/datatables/update" method="POST">
+                <div class="input-group pb-2">
+                    <input name="dataTableName" type="text" class="form-control" value="<%= datatable.tableName %> " disabled="">
+                </div>
+                <% var valueFieldId = 0 %>
+                <% datatable.fields.forEach(field => { %>
+                    <div id="row-template">
+                        <div class="input-group pb-2">
+                            <input type="text" class="form-control" value="<%= field[0] %>" disabled="">
+                            <input id="<%= "value" + valueFieldId %>" type="text" class="form-control" value="<%= field[1] %>" placeholder="Value" required>
+                            <% if(!isNaN(field[1])) { %>
+                                <button type="button" class="btn btn-secondary">-1</button>
+                                <button type="button" class="btn btn-secondary">+1</button>
+                                <button type="button" class="btn btn-secondary">+3</button>
+                                <button type="button" class="btn btn-secondary">+5</button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% valueFieldId++ %> 
+                <% }) %> 
+                
+    
+                <div class="d-flex justify-content-between mb-2">
+                    <button type="submit" class="btn btn-success">Submit DataTable</button>
+                </div>
+                <div class="input-group pb-2">
+                    <input name="xmlurl" type="text" class="form-control" value="url" disabled="">
+                </div>
+            </form>
+        </div>  
+        <div class="col-sm-3" style="background-color: red;">
+            asfd
+        </div> 
+    </div> 
+</div>
