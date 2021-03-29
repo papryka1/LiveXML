@@ -1,19 +1,18 @@
 <h1 class="mt-4">Dashboard</h1>
-<%= userTables %> 
-<% if(typeof userTables != 'undefined') { %>
+<% if(empty === false) { %>
     <h3>Your DataTables</h3>
     <table class="table table-hover">
         <thead>
             <tr>
                 <th scope="col">Table Name</th>
-                <th scope="col">Date Created</th>
+                <th scope="col" class="text-right">Date Created</th>
             </tr>
         </thead>
         <% userTables.forEach(datatable => { %>
             <tbody>
                 <tr>
                     <th scope="row"><a href="datatables/<%= datatable._id %>"><%= datatable.tableName %></a></th>
-                    <td><%= datatable.dateCreated %> </td>
+                    <td class="text-right"><%= datatable.dateCreated.toISOString().split('T')[0] %> </td>
                 </tr>
             </tbody>
         <% }); %> 
