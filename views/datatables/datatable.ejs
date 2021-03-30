@@ -2,7 +2,7 @@
 <div>   
     <div class="row justify-content-center">
         <div class="col-sm-9">
-            <form action="/datatables/update/<%= datatable._id %>" method="POST">
+            <form action="/datatables/<%= datatable._id %>?_method=PUT" method="POST">
                 <div class="input-group pb-2">
                     <input name="dataTableName" type="text" class="form-control" value="<%= datatable.tableName %>">
                 </div>
@@ -22,10 +22,11 @@
                     </div>
                     <% valueFieldId++ %> 
                 <% }) %> 
-            
+                
                 <div class="d-flex mb-2">
                     <button type="submit" class="btn btn-success">Submit DataTable</button>
                 </div>
+
                 <div class="input-group pb-2">
                     <input name="xmlurl" type="text" class="form-control" value="url" disabled="">
                 </div>
@@ -36,7 +37,7 @@
         </div> 
     </div> 
     <div>
-        <form action="/datatables/delete/<%= datatable._id %>" method="POST">
+        <form method="POST" action="/datatables/<%= datatable._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete your DataTable? This CAN NOT be rolledback!')">
             <button type="submit" class="btn btn-danger">Delete DataTable</button>
         </form>
     </div>

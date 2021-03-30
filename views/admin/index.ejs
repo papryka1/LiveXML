@@ -1,20 +1,24 @@
 <h2 class="mt-4">Users</h2>
-<table class="table table-hover">
+<table class="table table-hover table-sm">
     <thead>
         <tr>
           <th scope="col">Name</th>
           <th scope="col">Email</th>
           <th scope="col">Type</th>
-          <th scope="col">Action</th>
+          <th scope="col" class="text-center">Action</th>
         </tr>
     </thead>
     <tbody>
         <% allUsers.forEach(user => { %>
             <tr data-toggle="tooltip" data-placement="right" title="_id: <%= user._id %>">
-                <th scope="row"><%= user.name %></th>
-                <td><%= user.email %></td>
-                <td><%= user.userType %></td>
-                <td><a href="#">Delete</a></td>
+                <th scope="row" class="align-middle"><%= user.name %></th>
+                <td class="align-middle"><%= user.email %></td>
+                <td class="align-middle"><%= user.userType %></td>
+                <td class="text-center">
+                    <form method="POST" action="/admin/<%= user._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete a User? This CAN NOT be rolledback!')">
+                        <button type="submit" class="<%= user._id.toString() == activeUserId.toString() ? 'btn btn-link disabled' : 'btn btn-link' %>">Delete</button>
+                    </form>
+                </td>
             </tr>
         <% }) %>        
     </tbody>

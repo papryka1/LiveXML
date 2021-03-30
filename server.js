@@ -10,6 +10,7 @@ const session = require('express-session')
 const passport = require('passport')
 const ajax = require('ajax')
 var jsdom = require("jsdom");
+const methodOverride = require('method-override')
 
 const app = express()
 
@@ -29,6 +30,9 @@ app.set('view engine', 'ejs')
 
 // Bodyparser
 app.use(express.urlencoded({ extended: true }))
+
+// Method Override
+app.use(methodOverride('_method'))
 
 // Express Session
 app.use(session({
@@ -69,7 +73,7 @@ app.use('/users', require('./routes/users'))
 app.use('/datatables', require('./routes/datatables'))
 app.use('/admin', require('./routes/admin'))
 
-//The 404 Route
+// The 404 Route
 app.get('*', function(req, res){
     res.status(404).render('pagenotfound');
 });

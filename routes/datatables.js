@@ -66,4 +66,30 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     }
 })
 
+// Update DataTable
+router.put('/:id', auth.ensureAuthenticated, async (req, res) => {
+    let table
+    try {
+        table = await Datatable.findById(req.params.id).exec()
+        table.tableName = req.body.dataTableName
+        await table.save()
+        // doing full redirect so that _method=PUT would not be left in URL
+        res.redirect(`${table._id}`) 
+    } catch {
+
+    }
+})
+
+// Delete DataTable
+router.delete('/:id', auth.ensureAuthenticated, async (req, res) => {
+    let table
+    try {
+        table = await Datatable.findById(req.params.id).exec()
+        await table.remove()
+        res.redirect('/dashboard')
+    } catch {
+        res.redirect('/dashboard')
+    }
+})
+
 module.exports = router
