@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const auth = require('../config/auth')
+
+// Models
 const User = require('../models/User')
 
 // Admin Page

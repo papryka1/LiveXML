@@ -4,7 +4,7 @@ const auth = require('../config/auth')
 const isEmpty = require('lodash.isempty');
 
 // Models
-const Datatable = require('../models/Datatable')
+const Datatables = require('../models/Datatable')
 const User = require('../models/User')
 
 // Welcome Page
@@ -15,7 +15,7 @@ router.get('/', auth.checkNotAuthenticated, (req, res) => {
 // Dashboard
 router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
     try {
-        const userTables = await Datatable.find({"user": req.user._id}).sort({"dateCreated": -1}).exec()
+        const userTables = await Datatables.find({"user": req.user._id}).sort({"dateCreated": -1}).exec()
         if (isEmptyObject(userTables)) {
             res.render('dashboard', {userTables: userTables, empty: true})
         } else {

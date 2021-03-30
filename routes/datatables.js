@@ -4,7 +4,7 @@ const auth = require('../config/auth')
 const isEmpty = require('lodash.isempty');
 
 // Models
-const Datatable = require('../models/Datatable')
+const Datatables = require('../models/Datatable')
 const User = require('../models/User')
 
 // New DataTable Page
@@ -40,7 +40,7 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
             rows.push([fldN, fldV])
         }
 
-        const datatable = new Datatable({
+        const datatable = new Datatables({
             tableName: req.body.dataTableName,
             user: req.user._id,
             fields: rows
@@ -56,10 +56,39 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
     } 
 })
 
-// Show DataTable 
+// Share User DataTable
+router.put('/share/:id', auth.ensureAuthenticated, async (req, res) => {
+    console.log("share " + req.body.shareUserEmail)
+    dataTable = await Datatables.findById(req.params.id).exec()
+    let user
+    try {
+        user = await User.find({ "email": req.body.shareUserEmail}).exec()
+        if(user.length > 0) {
+            console.log(user)
+            console.log(user.name)
+            try {
+                await Datatables.updateOne(
+                    { _id:  dataTable._id },
+                    { $addToSet: { shared: user._id } }
+                )
+            } catch (err) {
+                console.error(err);
+                console.log("Failed Inserting!")
+            }
+        } else {
+            console.log("Share user does not exists!")
+        }
+        res.redirect(`../${dataTable._id}`) 
+    } catch (err) {
+        console.error(err);
+        res.redirect(`../${dataTable._id}`) 
+    }
+})
+
+// Show User DataTable 
 router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
-        const table = await Datatable.findById(req.params.id).exec()
+        const table = await Datatables.findById(req.params.id).exec()
         res.render('datatables/datatable', { datatable: table })
     } catch (err) {
         res.redirect('/dashboard')
@@ -68,28 +97,33 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
 
 // Update DataTable
 router.put('/:id', auth.ensureAuthenticated, async (req, res) => {
-    let table
+    console.log(req.body)
+    
+    let dataTable
     try {
-        table = await Datatable.findById(req.params.id).exec()
-        table.tableName = req.body.dataTableName
-        await table.save()
+        dataTable = await Datatables.findById(req.params.id).exec()
+        dataTable.tableName = req.body.dataTableName
+        await dataTable.save()
+        
         // doing full redirect so that _method=PUT would not be left in URL
-        res.redirect(`${table._id}`) 
+        res.redirect(`${dataTable._id}`) 
     } catch {
-
+        res.redirect('/dashboard')
     }
 })
 
-// Delete DataTable
+// Delete User DataTable
 router.delete('/:id', auth.ensureAuthenticated, async (req, res) => {
-    let table
+    let dataTable
     try {
-        table = await Datatable.findById(req.params.id).exec()
-        await table.remove()
+        dataTable = await Datatables.findById(req.params.id).exec()
+        await dataTable.remove()
         res.redirect('/dashboard')
     } catch {
         res.redirect('/dashboard')
     }
 })
+
+
 
 module.exports = router
