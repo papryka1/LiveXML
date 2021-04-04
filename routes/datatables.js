@@ -20,8 +20,13 @@ router.get('/new', auth.ensureAuthenticated, (req, res) => {
 })
 
 // Shared DataTable Page
-router.get('/shared', auth.ensureAuthenticated, (req, res) => {
-    res.render('datatables/shared')
+router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
+    try {
+
+        res.render('datatables/shared')
+    } catch {
+        res.redirect('/')
+    }
 })
 
 // DataTable Presets Page
@@ -95,13 +100,10 @@ router.delete('/unshare/:tableId/user/:userId', auth.ensureAuthenticated, async 
     try {
         const dataTable = await Datatables.findById(req.params.tableId).exec()
         const user = await User.findById(req.params.userId).exec()
-        console.info(dataTable)
-        console.info(user)
         await Datatables.updateOne(
             { _id:  dataTable._id },
             { $pull: { shared: user._id }}
         )
-        
         res.redirect(`../../../${dataTable._id}`)  
     } catch (err) {
         console.error(err);

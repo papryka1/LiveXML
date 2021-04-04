@@ -54,7 +54,7 @@
     <small class="form-text text-muted">Users you share your DataTable with will only be able to modify row values.</small>
     <form action="/datatables/share/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group py-2">
-            <input name="shareUserEmail" type="text" class="form-control" placeholder="User email address" required>
+            <input name="shareUserEmail" type="email" class="form-control" placeholder="User email address" required>
             <button type="submit" class="btn btn-primary">Share</button>
         </div>    
     </form>
@@ -65,7 +65,7 @@
                     <th scope="row" class="align-middle"> <%= user.name %></th>
                     <td class="text-right">
                         <form method="POST" action="/datatables/unshare/<%= datatable._id %>/user/<%= user._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to unshare this user?')">
-                            <button type="submit" class="btn btn-link">Delete</button>
+                            <button type="submit" class="btn btn-link">Remove</button>
                         </form>
                     </td>
                 </tr>
