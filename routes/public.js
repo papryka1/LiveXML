@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
+var path = require('path');
 
 router.get('/generated/:id', (req, res) => {
-    res.send('public/generated id:' + req.params.id)
+    res.sendFile(path.resolve(`public\\generated\\${req.params.id}.xml`));
 })
 
 module.exports = router
