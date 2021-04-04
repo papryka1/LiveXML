@@ -3,6 +3,7 @@ const router = express.Router()
 const auth = require('../config/auth')
 const isEmpty = require('lodash.isempty')
 var fs = require('fs');
+var path = require("path");
 
 // XML Builder
 const { create } = require('xmlbuilder2')
@@ -28,7 +29,6 @@ router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
         } else {
             res.render('datatables/shared', {sharedDataTables: sharedDataTables, empty: false})
         }
-
     } catch {
         res.redirect('/')
     }
@@ -37,8 +37,8 @@ router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
 // Show Shared DataTable 
 router.get('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
-        const table = await Datatables.findById(req.params.id).exec()
-        res.render('datatables/sharedDataTable', { datatable: table })
+        const dataTable = await Datatables.findById(req.params.id).exec()
+        res.render('datatables/sharedDataTable', { datatable: dataTable })
     } catch (err) {
         console.error(err)
         res.redirect('/shared')
@@ -55,7 +55,6 @@ router.put('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
         }
         dataTable.markModified('fields');
         await dataTable.save()  
-        generateXML(dataTable._id)     
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`../shared/${dataTable._id}`) 
     } catch (err) {
@@ -92,7 +91,6 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 
         try {
             const newDataTable = await datatable.save()
-            generateXML(newDataTable.id)
             res.redirect(`datatables/${newDataTable.id}`)
         } catch (err) {
             console.log(err)
@@ -153,9 +151,10 @@ router.delete('/unshare/:tableId/user/:userId', auth.ensureAuthenticated, async 
 // Show User DataTable 
 router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
-        const table = await Datatables.findById(req.params.id).exec()
-        const sharedUsers = await User.find({_id: table.shared}, {name: 1})
-        res.render('datatables/datatable', { datatable: table, sharedUsers: sharedUsers })
+        const dataTable = await Datatables.findById(req.params.id).exec()
+        const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
+        const absolutePath = await generateXML(dataTable._id)
+        res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, absolutePath: absolutePath })
     } catch (err) {
         console.error(err)
         res.redirect('/dashboard')
@@ -173,8 +172,7 @@ router.put('/:id', auth.ensureAuthenticated, async (req, res) => {
             dataTable.fields[index][1] = req.body[keys[index]]
         }
         dataTable.markModified('fields');
-        await dataTable.save()  
-        generateXML(dataTable._id)    
+        await dataTable.save()     
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`${dataTable._id}`) 
     } catch {
@@ -207,12 +205,14 @@ async function generateXML(dataTableID) {
         }
         sb.append("</DataTable>")
         const doc = create(sb.toString())
-        var fsStream = fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
-        fsStream.write(doc.end({ prettyPrint: true }))
+        var fsStream = await fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
+        await fsStream.write(doc.end({ prettyPrint: true }))
+        var absolutePath = path.resolve(fsStream.path)
         fsStream.end();
+        return absolutePath
     } catch (err) {
         console.error(err)
-    }     
+    } 
 }
 
 function isEmptyObject(obj) {
