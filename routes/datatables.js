@@ -55,8 +55,7 @@ router.put('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
         }
         dataTable.markModified('fields');
         await dataTable.save()  
-        //generateXML(dataTable._id, req.body)    
-
+        generateXML(dataTable._id)     
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`../shared/${dataTable._id}`) 
     } catch (err) {
@@ -73,11 +72,8 @@ router.get('/presets', auth.ensureAuthenticated, (req, res) => {
 // Create User DataTable
 router.post('/', auth.ensureAuthenticated, async (req, res) => {
     if(isEmpty(req.body.fieldName || req.body.fieldValue)) {
-        console.log("empty")
         res.redirect("datatables/new")
-    } else {
-        console.log("not empty")
-        
+    } else {      
         let fieldNames = req.body.fieldName
         let fieldValues = req.body.fieldValue
         var rows = []
@@ -96,6 +92,7 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 
         try {
             const newDataTable = await datatable.save()
+            generateXML(newDataTable.id)
             res.redirect(`datatables/${newDataTable.id}`)
         } catch (err) {
             console.log(err)
@@ -177,7 +174,7 @@ router.put('/:id', auth.ensureAuthenticated, async (req, res) => {
         }
         dataTable.markModified('fields');
         await dataTable.save()  
-        //generateXML(dataTable._id, req.body)    
+        generateXML(dataTable._id)    
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`${dataTable._id}`) 
     } catch {
@@ -197,14 +194,22 @@ router.delete('/:id', auth.ensureAuthenticated, async (req, res) => {
     }
 })
 
-async function generateXML(dataTableID, body) {
+async function generateXML(dataTableID) {
     try {
         dataTable = await Datatables.findById(dataTableID).exec()
         console.info("Generating XML for _id: " + dataTable._id)
-        console.log(body)
-        const xmlStr = '<root att="val"><foo><bar>foobar</bar></foo></root>';
         const sb = new StringBuilder();
-
+        sb.append("<DataTable>")
+        for (let index = 0; index < dataTable.fields.length; index++) {
+            sb.append("<" + dataTable.fields[index][0] + ">")
+            sb.append(dataTable.fields[index][1])
+            sb.append("</" + dataTable.fields[index][0] + ">")
+        }
+        sb.append("</DataTable>")
+        const doc = create(sb.toString())
+        var fsStream = fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
+        fsStream.write(doc.end({ prettyPrint: true }))
+        fsStream.end();
     } catch (err) {
         console.error(err)
     }     
