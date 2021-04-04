@@ -205,8 +205,8 @@ async function generateXML(dataTableID) {
         }
         sb.append("</DataTable>")
         const doc = create(sb.toString())
-        var fsStream = await fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
-        await fsStream.write(doc.end({ prettyPrint: true }))
+        var fsStream = fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
+        fsStream.write(doc.end({ prettyPrint: true }))
         var absolutePath = path.resolve(fsStream.path)
         fsStream.end();
         return absolutePath
