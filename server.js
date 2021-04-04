@@ -40,6 +40,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
+app.use(express.static('public'))
 
 // Passport middleware
 app.use(passport.initialize())
@@ -67,11 +68,12 @@ app.use((req, res, next) => {
     next()
 })
 
-// Router
+// Routers
 app.use('/', require('./routes/index'))
 app.use('/users', require('./routes/users'))
 app.use('/datatables', require('./routes/datatables'))
 app.use('/admin', require('./routes/admin'))
+app.use('/public', require('./routes/public'))
 
 // The 404 Route
 app.get('*', function(req, res){
