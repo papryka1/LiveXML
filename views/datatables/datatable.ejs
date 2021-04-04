@@ -1,26 +1,45 @@
+<script>
+    $("document").ready(function(){
+        $(".message").hide()
+        $(".check-change").on('change', function() {
+            $(".message").show()
+        })
+
+        $(".btnMinusOne").click(function(){
+            $("#value0").val('1000')
+            console.log('-1 pressed')
+        })
+    })
+</script>
+
+
 <h2 class="text-center mt-4">DataTable</h2>
 <div>   
     <form action="/datatables/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group pb-2">
-            <input name="dataTableName" type="text" class="form-control" value="<%= datatable.tableName %>">
+            <input name="dataTableName" type="text" class="form-control check-change" value="<%= datatable.tableName %>">
         </div>
         <% var valueFieldId = 0 %>
         <% datatable.fields.forEach(field => { %>
             <div id="row-template">
                 <div class="input-group pb-2">
-                    <input type="text" class="form-control" value="<%= field[0] %>" disabled="">
-                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control" value="<%= field[1] %>" placeholder="Value" required>
+                    <input type="text" class="form-control check-change" value="<%= field[0] %>" disabled="">
+                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" value="<%= field[1] %>" placeholder="Value" required>
                     <% if(!isNaN(field[1])) { %>
-                        <button type="button" class="btn btn-secondary">-1</button>
-                        <button type="button" class="btn btn-secondary">+1</button>
-                        <button type="button" class="btn btn-secondary">+3</button>
-                        <button type="button" class="btn btn-secondary">+5</button>
+                        <button type="button" class="btn btn-secondary btnMinusOne">-1</button>
+                        <button type="button" class="btn btn-secondary btnPlusOne">+1</button>
+                        <button type="button" class="btn btn-secondary btnPlusThree">+3</button>
+                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>
                     <% } %>
                 </div>
             </div>
             <% valueFieldId++ %> 
         <% }) %> 
         
+        <div class="message">
+            <small style="color: red;">Press "Submit DataTable" to save changes!</small>
+        </div>
+
         <div class="d-flex justify-content-center mb-2">
             <button type="submit" class="btn btn-success">Submit DataTable</button>
         </div>
@@ -32,17 +51,31 @@
 <hr />
 <div>
     <h3>Share your DataTable</h3>
-    <small class="form-text text-muted">Users you share your DataTable with will only be able to modify field values.</small>
+    <small class="form-text text-muted">Users you share your DataTable with will only be able to modify row values.</small>
     <form action="/datatables/share/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group py-2">
             <input name="shareUserEmail" type="text" class="form-control" placeholder="User email address" required>
-            <button type="submit" class="btn btn-primary disabled">Share</button>
+            <button type="submit" class="btn btn-primary">Share</button>
         </div>    
     </form>
+    <table class="table table-hover" style="border: hidden;">
+        <tbody>
+            <% sharedUsers.forEach(user => { %>
+                <tr>
+                    <th scope="row" class="align-middle"> <%= user.name %></th>
+                    <td class="text-right">
+                        <form method="POST" action="/datatables/unshare/<%= datatable._id %>/user/<%= user._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to unshare this user?')">
+                            <button type="submit" class="btn btn-link">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+             <% }) %> 
+       </tbody>
+    </table>
 </div>
 <hr />
 <div class="d-flex justify-content-end">
-    <form method="POST" action="/datatables/<%= datatable._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete your DataTable? This CAN NOT be rolledback!')">
+    <form method="POST" action="/datatables/<%= datatable._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete your DataTable? This CAN NOT be undone!')">
         <button type="submit" class="btn btn-danger">Delete DataTable</button>
     </form>
 </div>

@@ -12,7 +12,6 @@
                 if(r == true) {
                     $(this).parent().remove()
                 }
-                
             })
         }
     })
@@ -21,7 +20,7 @@
 <h2 class="text-center mt-4">Create New DataTable</h2>
 <div>   
     <form action="/datatables" method="POST">
-        <div class="input-group pb-2">
+        <div class="form-floating pb-2">
             <input name="dataTableName" type="text" class="form-control" placeholder="New DataTable Name" required>
         </div>
 
@@ -40,7 +39,7 @@
         <div class="input-group pb-2">
             <input name="fieldName[]" type="text" class="form-control" placeholder="Field name" required>
             <input name="fieldValue[]" type="text" class="form-control" placeholder="Value" required>
-            <button type="button" id="deleteRowBtn" class="btn btn-warning deleteRowBtn">Delete</button>
+            <button type="button" class="btn btn-warning deleteRowBtn">Delete</button>
         </div>
     </div>
 </div>
