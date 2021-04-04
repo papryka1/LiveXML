@@ -1,1 +1,21 @@
-<h2 class="text-center mt-4">Shared DataTable</h2>
+<h2 class="text-center mt-4">Shared DataTables</h2>
+<% if(empty === false) { %>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Table Name</th>
+                <th scope="col" class="text-right">Date Created</th>
+            </tr>
+        </thead>
+        <% sharedDataTables.forEach(datatable => { %>
+            <tbody>
+                <tr>
+                    <th scope="row"><a href="shared/<%= datatable._id %>"><%= datatable.tableName %></a></th>
+                    <td class="text-right"><%= datatable.dateCreated.toISOString().split('T')[0] %> </td>
+                </tr>
+            </tbody>
+        <% }); %> 
+    </table>
+<% } else { %>
+    <h4>There are no DataTables shared with you</h4>
+<% } %> 

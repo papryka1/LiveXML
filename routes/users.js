@@ -83,7 +83,7 @@ router.post('/register', (req, res) => {
                         // Save user
                         newUser.save()
                             .then(user => {
-                                req.flash('success_msg', 'Paskyra sukurta!')
+                                req.flash('success_msg', 'Account created!')
                                 res.redirect('login')
                             })
                             .catch(err => console.log())

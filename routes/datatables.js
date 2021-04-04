@@ -19,13 +19,49 @@ router.get('/new', auth.ensureAuthenticated, (req, res) => {
     res.render('datatables/new')
 })
 
-// Shared DataTable Page
+// Shared DataTables List Page
 router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
     try {
+        const sharedDataTables = await Datatables.find({ shared: req.user._id }).sort({"dateCreated": -1}).exec()
+        if (isEmptyObject(sharedDataTables)) {
+            res.render('datatables/shared', {sharedDataTables: sharedDataTables, empty: true})
+        } else {
+            res.render('datatables/shared', {sharedDataTables: sharedDataTables, empty: false})
+        }
 
-        res.render('datatables/shared')
     } catch {
         res.redirect('/')
+    }
+})
+
+// Show Shared DataTable 
+router.get('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
+    try {
+        const table = await Datatables.findById(req.params.id).exec()
+        res.render('datatables/sharedDataTable', { datatable: table })
+    } catch (err) {
+        console.error(err)
+        res.redirect('/shared')
+    }
+})
+
+// Update Shared DataTable
+router.put('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
+    try {
+        const dataTable = await Datatables.findById(req.params.id).exec()
+        var keys = Object.keys(req.body)
+        for (let index = 0; index < dataTable.fields.length; index++) {
+            dataTable.fields[index][1] = req.body[keys[index]]
+        }
+        dataTable.markModified('fields');
+        await dataTable.save()  
+        //generateXML(dataTable._id, req.body)    
+
+        // doing full redirect so that _method=PUT would not be left in URL
+        res.redirect(`../shared/${dataTable._id}`) 
+    } catch (err) {
+        console.error(err)
+        res.redirect('/dashboard')
     }
 })
 
@@ -70,28 +106,34 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 
 // Share User DataTable
 router.put('/share/:id', auth.ensureAuthenticated, async (req, res) => {
-    console.log("sharing for: " + req.body.shareUserEmail)
+    //console.log("sharing for: " + req.body.shareUserEmail)
     let dataTable
     try {
         dataTable = await Datatables.findById(req.params.id).exec()
         const user = await User.find({ "email": req.body.shareUserEmail}).exec()
-        if(user.length > 0) {
-            try {
-                await Datatables.updateOne(
-                    { _id:  dataTable._id },
-                    { $addToSet: { shared: user[0]._id } }
-                )
-            } catch (err) {
-                console.error(err);
-                console.log("Failed Inserting!")
-            }
+        
+        // check to make sure user do not share to himself
+        if(req.user._id.toString() == user[0]._id.toString()) {
+            res.redirect(`../${dataTable._id}`)
         } else {
-            console.log("Share user does not exists!")
-        }
-        res.redirect(`../${dataTable._id}`) 
+            if(user.length > 0) {
+                try {
+                    await Datatables.updateOne(
+                        { _id:  dataTable._id },
+                        { $addToSet: { shared: user[0]._id } }
+                    )
+                } catch (err) {
+                    console.error(err);
+                    console.log("Failed Inserting!")
+                }
+            } else {
+                console.log("Share user does not exists!")
+            }
+            res.redirect(`../${dataTable._id}`)
+        } 
     } catch (err) {
         console.error(err);
-        res.redirect(`../${dataTable._id}`) 
+        res.redirect(`/`) 
     }
 })
 
@@ -128,10 +170,14 @@ router.put('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
         dataTable.tableName = req.body.dataTableName
+        var keys = Object.keys(req.body)
+        keys.shift() //removes first element from array
+        for (let index = 0; index < dataTable.fields.length; index++) {
+            dataTable.fields[index][1] = req.body[keys[index]]
+        }
+        dataTable.markModified('fields');
         await dataTable.save()  
-
         //generateXML(dataTable._id, req.body)    
-
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`${dataTable._id}`) 
     } catch {
@@ -162,6 +208,10 @@ async function generateXML(dataTableID, body) {
     } catch (err) {
         console.error(err)
     }     
+}
+
+function isEmptyObject(obj) {
+    return !Object.keys(obj).length;
 }
 
 module.exports = router
