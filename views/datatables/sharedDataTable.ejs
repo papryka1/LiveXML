@@ -6,15 +6,36 @@
         })
 
         $(".btnMinusOne").click(function(){
-            $("#value0").val('1000')
-            console.log('-1 pressed')
+            var num = parseInt($(this).siblings("input[name^=value]").val()) - 1
+            if(num >= 0) {
+                $(this).siblings("input[name^=value]").val(num)
+            }
+            $(".message").show()
+        })
+
+        $(".btnPlusOne").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 1
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+        })
+
+        $(".btnPlusThree").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 3
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+        })
+
+        $(".btnPlusFive").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 5
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
         })
 
         $("#copyToClipboard").click(function(){
             $("#urlField").select();
             document.execCommand("copy");
             alert("Copied to clipboard");
-        });
+        });  
     })
 </script>
 

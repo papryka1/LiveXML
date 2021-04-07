@@ -6,8 +6,29 @@
         })
 
         $(".btnMinusOne").click(function(){
-            $("#value0").val('1000')
-            console.log('-1 pressed')
+            var num = parseInt($(this).siblings("input[name^=value]").val()) - 1
+            if(num >= 0) {
+                $(this).siblings("input[name^=value]").val(num)
+            }
+            $(".message").show()
+        })
+
+        $(".btnPlusOne").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 1
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+        })
+
+        $(".btnPlusThree").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 3
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+        })
+
+        $(".btnPlusFive").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 5
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
         })
 
         $("#copyToClipboard").click(function(){
@@ -23,7 +44,7 @@
 <div>   
     <form action="/datatables/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group pb-2">
-            <input name="dataTableName" type="text" class="form-control check-change" value="<%= datatable.tableName %>">
+            <input name="dataTableName" type="text" class="form-control check-change" pattern="^[a-zA-Z].*" oninvalid="setCustomValidity('First character must be a letter')" oninput="setCustomValidity('')" value="<%= datatable.tableName %>">
         </div>
         <% var valueFieldId = 0 %>
         <% datatable.fields.forEach(field => { %>

@@ -1,1 +1,24 @@
 <h2 class="text-center mt-4">DataTable Presets</h2>
+<ul class="nav nav-tabs justify-content-center">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#football">Football</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#basketball">Basketball</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#rugby">Rugby</a>
+    </li>
+</ul>
+
+<div class="tab-content mt-2">
+    <div class="tab-pane fade active show" id="football">
+        <%- include('presets/football.ejs') %>
+    </div>
+    <div class="tab-pane fade" id="basketball">
+        <%- include('presets/basketball.ejs') %>
+    </div>
+    <div class="tab-pane fade" id="rugby">
+        <%- include('presets/rugby.ejs') %>
+    </div>  
+</div>

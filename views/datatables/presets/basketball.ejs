@@ -1,0 +1,20 @@
+<div>   
+    <form action="../datatables" method="POST">
+        <div class="form-floating pb-2">
+            <input name="dataTableName" type="text" class="form-control" placeholder="Basketball DataTable" pattern="^[a-zA-Z].*" oninvalid="setCustomValidity('First character must be a letter')" oninput="setCustomValidity('')" required>
+        </div>
+
+        <div class="input-group pb-2 ">
+            <input name="fieldName[]" type="text" class="form-control" value="HomeTeam" readonly>
+            <input name="fieldValue[]" type="text" class="form-control" placeholder="Value" required>
+        </div>
+        <div class="input-group pb-2 ">
+            <input name="fieldName[]" type="text" class="form-control" value="AwayTeam" readonly>
+            <input name="fieldValue[]" type="text" class="form-control" placeholder="Value" required>
+        </div>
+
+        <div class="d-flex justify-content-center mb-2">
+            <button type="submit" class="btn btn-success">Create DataTable</button>
+        </div>
+    </form>    
+</div>

@@ -38,6 +38,7 @@ router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
 router.get('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
+        const absolutePath = await generateXML(dataTable._id)
         res.render('datatables/sharedDataTable', { datatable: dataTable })
     } catch (err) {
         console.error(err)
@@ -153,8 +154,14 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
         const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
+        const allUsersEmail = await User.find({}, {email: 1})
+        console.log(allUsersEmail)
+        var output = allUsersEmail.filter(function(value){ return value.email==req.user.email;})
+        const index = allUsersEmail.indexOf(output);
+        console.log(index)
+        console.log(output)
         const absolutePath = await generateXML(dataTable._id)
-        res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, absolutePath: absolutePath })
+        res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, allUsersEmail: allUsersEmail, absolutePath: absolutePath })
     } catch (err) {
         console.error(err)
         res.redirect('/dashboard')
