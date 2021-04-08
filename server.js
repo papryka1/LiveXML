@@ -40,7 +40,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
-app.use(express.static('./public')) //no clue how it works 
+//app.use(express.static('./public')) //no clue how it works 
 
 // Passport middleware
 app.use(passport.initialize())
