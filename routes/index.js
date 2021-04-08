@@ -27,6 +27,11 @@ router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
     }
 })
 
+// Contact Us
+router.get('/contact', auth.ensureAuthenticated, async (req, res) => {
+    res.render('contact')
+})
+
 function isEmptyObject(obj) {
     return !Object.keys(obj).length;
 }
