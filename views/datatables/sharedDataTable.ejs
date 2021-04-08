@@ -11,24 +11,28 @@
                 $(this).siblings("input[name^=value]").val(num)
             }
             $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusOne").click(function(){
             var num = parseInt($(this).siblings("input[name^=value]").val()) + 1
             $(this).siblings("input[name^=value]").val(num)
             $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusThree").click(function(){
             var num = parseInt($(this).siblings("input[name^=value]").val()) + 3
             $(this).siblings("input[name^=value]").val(num)
             $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusFive").click(function(){
             var num = parseInt($(this).siblings("input[name^=value]").val()) + 5
             $(this).siblings("input[name^=value]").val(num)
             $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $("#copyToClipboard").click(function(){
@@ -65,7 +69,7 @@
             <% valueFieldId++ %> 
         <% }) %> 
         <div class="d-flex justify-content-center mb-2">
-            <button type="submit" class="btn btn-success">Submit DataTable</button>
+            <button id="submitBtn" type="submit" class="btn btn-success">Submit DataTable</button>
         </div>
         <div class="message text-center">
             <small style="color: red;">Press "Submit DataTable" to save changes!</small>

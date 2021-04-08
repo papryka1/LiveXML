@@ -216,6 +216,7 @@ async function generateXML(dataTableID) {
         doc.dec({ encoding: 'utf-8' })
 
         var fsStream = fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
+        console.log(fsStream)
         fsStream.write(doc.end({ prettyPrint: true }))
         fsStream.end();
     } catch (err) {
