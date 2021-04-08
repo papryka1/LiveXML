@@ -152,13 +152,14 @@ router.delete('/unshare/:tableId/user/:userId', auth.ensureAuthenticated, async 
 router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
-        const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
-
-        const allUsersEmail = await User.find({}, {email: 1})
-
-        await generateXML(dataTable._id)
-        absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
-        res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, absolutePath: absolutePath })
+        if(dataTable.user.toString() == req.user._id.toString()) {
+            const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
+            await generateXML(dataTable._id)
+            absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
+            res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, absolutePath: absolutePath })    
+        } else {
+            res.redirect('/')
+        }
     } catch (err) {
         console.error(err)
         res.redirect('/dashboard')
