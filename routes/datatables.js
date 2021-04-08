@@ -3,10 +3,9 @@ const router = express.Router()
 const auth = require('../config/auth')
 const isEmpty = require('lodash.isempty')
 var fs = require('fs');
-var path = require("path");
 
 // XML Builder
-const { create } = require('xmlbuilder2')
+const { create } = require('xmlbuilder2', { encoding: 'utf-8' })
 
 // String Builder
 const StringBuilder = require("string-builder");
@@ -154,14 +153,12 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
         const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
+
         const allUsersEmail = await User.find({}, {email: 1})
-        console.log(allUsersEmail)
-        var output = allUsersEmail.filter(function(value){ return value.email==req.user.email;})
-        const index = allUsersEmail.indexOf(output);
-        console.log(index)
-        console.log(output)
-        const absolutePath = await generateXML(dataTable._id)
-        res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, allUsersEmail: allUsersEmail, absolutePath: absolutePath })
+
+        await generateXML(dataTable._id)
+        absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
+        res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, absolutePath: absolutePath })
     } catch (err) {
         console.error(err)
         res.redirect('/dashboard')
@@ -203,20 +200,24 @@ async function generateXML(dataTableID) {
     try {
         dataTable = await Datatables.findById(dataTableID).exec()
         console.info("Generating XML for _id: " + dataTable._id)
+
         const sb = new StringBuilder();
         sb.append("<DataTable>")
         for (let index = 0; index < dataTable.fields.length; index++) {
             sb.append("<" + dataTable.fields[index][0] + ">")
+            sb.append("<![CDATA[")
             sb.append(dataTable.fields[index][1])
+            sb.append("]]>")
             sb.append("</" + dataTable.fields[index][0] + ">")
         }
         sb.append("</DataTable>")
-        const doc = create(sb.toString())
+
+        const doc = create(sb.toString(), {encoding: 'UTF-8'})
+        doc.dec({ encoding: 'utf-8' })
+
         var fsStream = fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
         fsStream.write(doc.end({ prettyPrint: true }))
-        var absolutePath = path.resolve(fsStream.path)
         fsStream.end();
-        return absolutePath
     } catch (err) {
         console.error(err)
     } 
