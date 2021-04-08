@@ -37,8 +37,9 @@ router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
 router.get('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
-        const absolutePath = await generateXML(dataTable._id)
-        res.render('datatables/sharedDataTable', { datatable: dataTable })
+        await generateXML(dataTable._id)
+        const absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
+        res.render('datatables/sharedDataTable', { datatable: dataTable, absolutePath: absolutePath })
     } catch (err) {
         console.error(err)
         res.redirect('/shared')
@@ -155,7 +156,7 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
         if(dataTable.user.toString() == req.user._id.toString()) {
             const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
             await generateXML(dataTable._id)
-            absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
+            const absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
             res.render('datatables/datatable', { datatable: dataTable, sharedUsers: sharedUsers, absolutePath: absolutePath })    
         } else {
             res.redirect('/')
@@ -217,7 +218,6 @@ async function generateXML(dataTableID) {
         doc.dec({ encoding: 'utf-8' })
 
         var fsStream = await fs.createWriteStream(`public\\generated\\${dataTable._id}.xml`);
-        console.log("Path: " + fsStream.path)
         fsStream.write(doc.end({ prettyPrint: true }))
         fsStream.end();
     } catch (err) {
