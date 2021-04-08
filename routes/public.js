@@ -4,8 +4,9 @@ var path = require('path');
 var fs = require('fs');
 
 router.get('/generated/:id', (req, res) => {
-    if(fs.existsSync(path.resolve(`public\\generated\\${req.params.id}.xml`))) {
-        res.sendFile(path.resolve(`public\\generated\\${req.params.id}.xml`));
+    var filePath = path.resolve(`public\\generated\\${req.params.id}.xml`)
+    if(fs.existsSync(filePath)) {
+        res.sendFile(filePath);
     } else {
         res.redirect("../../../dashboard")
     }
