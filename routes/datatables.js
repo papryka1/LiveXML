@@ -212,11 +212,11 @@ async function generateXML(dataTableID) {
         }
         sb.append("</DataTable>")
 
-        const doc = create(sb.toString(), {encoding: 'UTF-8'})
+        const doc = await create(sb.toString(), {encoding: 'UTF-8'})
         doc.dec({ encoding: 'utf-8' })
 
-        var fsStream = fs.createWriteStream(`public/generated/${dataTable._id}.xml`);
-        console.log(fsStream)
+        var fsStream = await fs.createWriteStream(`public\\generated\\${dataTable._id}.xml`);
+        console.log("Path: " + fsStream.path)
         fsStream.write(doc.end({ prettyPrint: true }))
         fsStream.end();
     } catch (err) {
