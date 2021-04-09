@@ -23,3 +23,27 @@
         <% }) %>        
     </tbody>
 </table>
+
+<h2 class="mt-4">Feedback</h2>
+<table class="table table-hover table-sm">
+    <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col" class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% feedbacks.forEach(feedback => { %>
+            <tr>
+                <th scope="row" class="align-middle"><%= feedback.user %></th>
+                <td class="align-middle"><%= feedback.content %></td>
+                <td class="align-middle">
+                    <form method="POST" action="/admin/<%= feedback._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete a User? This CAN NOT be rolledback!')">
+                        <button type="submit" class="btn btn-link">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>        
+    </tbody>
+</table>

@@ -4,6 +4,7 @@ const auth = require('../config/auth')
 
 // Models
 const User = require('../models/User')
+const Feedback = require('../models/Feedback')
 
 // Admin Page
 router.get('/', auth.ensureAuthenticated, async (req, res) => {
@@ -14,8 +15,17 @@ router.get('/', auth.ensureAuthenticated, async (req, res) => {
         if (!users){
             return res.status(422).send({ error:"No data in the collection" })
         }
-        res.render('admin', {allUsers:users, activeUserId: req.user._id})
     })
+    const feedbacks = await Feedback.find({}, (err, feedbacks) => {
+        if (err){
+            return res.status(422).send(err)
+        }
+        if (!feedbacks){
+            return res.status(422).send({ error:"No data in the collection" })
+        }
+    })
+    console.log(feedbacks)
+    res.render('admin', {allUsers: users, activeUserId: req.user._id, feedbacks: feedbacks})
 })
 
 // Delete User

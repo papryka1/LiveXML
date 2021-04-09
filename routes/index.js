@@ -6,13 +6,14 @@ const isEmpty = require('lodash.isempty');
 // Models
 const Datatables = require('../models/Datatable')
 const User = require('../models/User')
+const Feedback = require('../models/Feedback')
 
 // Welcome Page
 router.get('/', auth.checkNotAuthenticated, (req, res) => {
     res.render('index')
 })
 
-// Dashboard
+// Dashboard Page
 router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
     try {
         const userTables = await Datatables.find({"user": req.user._id}).sort({"dateCreated": -1}).exec()
@@ -27,9 +28,23 @@ router.get('/dashboard', auth.ensureAuthenticated, async (req, res) => {
     }
 })
 
-// Contact Us
+// Contact Us Page
 router.get('/contact', auth.ensureAuthenticated, async (req, res) => {
     res.render('contact')
+})
+
+// Feedback Submit
+router.post('/contact', auth.ensureAuthenticated, async (req, res) => {
+    const feedback = new Feedback({
+        content: req.body.text,
+        user: req.user._id,
+    }) 
+    try {
+        await feedback.save()
+    } catch (err) {
+        console.log(err)
+    }
+    res.redirect('/')
 })
 
 function isEmptyObject(obj) {

@@ -1,7 +1,7 @@
-<div class="form-group">
-    <h2 class="text-center mt-4">Leave us your feedback!</h2>
-    <form action="">
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
-        
+<div class="form-group text-center">
+    <h2 class="mt-4">Leave us your feedback!</h2>
+    <form action="/contact" method="POST">
+        <textarea class="form-control" name="text" rows="5" required></textarea>
+        <button type="submit" class="btn btn-success my-2">Send</button>
     </form>
 </div>
