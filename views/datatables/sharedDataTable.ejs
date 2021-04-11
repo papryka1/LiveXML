@@ -1,6 +1,7 @@
 <script>
     $("document").ready(function(){
         $(".message").hide()
+
         $(".check-change").on('change', function() {
             $(".message").show()
         })
@@ -40,8 +41,15 @@
             document.execCommand("copy");
             alert("Copied to clipboard\nXPath: DataTable");
         });  
+
+        $(".presetDropdown").change(function(){
+            var value = this.value;
+            $(this).siblings("input[name^=value]").val(value)
+            $(".message").show()
+        });
     })
 </script>
+
 
 
 <h2 class="text-center mt-4">Shared DataTable</h2>
@@ -56,34 +64,39 @@
         <% datatable.fields.forEach(field => { %>
             <div id="row-template">
                 <div class="input-group pb-2">
-                    <input type="text" class="form-control check-change" value="<%= field[0] %>" disabled>
-                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" value="<%= field[1] %>" placeholder="Value" required>
-                    <% if(!isNaN(field[1])) { %>
+                    <input type="text" class="form-control check-change" value="<%= field[0] %>" disabled="">
+                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" value="<%= field[1] %>" placeholder="Value" style="font-weight: bold;" required>
+                    <% for(var i = 0; i < datatable.valuePresets.length; i++) { %>
+                        <% if(field[0].toString() == datatable.valuePresets[i][0].toString()) { %>
+                            <select class="form-control presetDropdown">
+                                <% datatable.valuePresets[i][1].forEach(presetValue => { %>
+                                    <option value="<%= presetValue %>" <% if(presetValue.toString() == field[1] ) { %> selected <% } %> ><%= presetValue %></option>
+                                <% }) %>
+                            </select>
+                        <% } %>
+                    <% } %> 
+                    <% if (!isNaN(field[1])) { %>
                         <button type="button" class="btn btn-secondary btnMinusOne">-1</button>
                         <button type="button" class="btn btn-secondary btnPlusOne">+1</button>
                         <button type="button" class="btn btn-secondary btnPlusThree">+3</button>
-                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>
-                    <% } %>
+                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>    
+                    <% } %> 
                 </div>
             </div>
             <% valueFieldId++ %> 
         <% }) %> 
-        <div class="d-flex justify-content-center mb-2">
+        <div class="d-flex justify-content-center">
             <button id="submitBtn" type="submit" class="btn btn-success">Submit DataTable</button>
+            <button id="copyToClipboard" class="btn btn-outline-success" type="button" data-toggle="tooltip" data-placement="top" title="Copy to clipboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+            </button>
         </div>
         <div class="message text-center">
             <small style="color: red;">Press "Submit DataTable" to save changes!</small>
         </div>
     </form> 
-    <div class="input-group pb-2">
-        <input id="urlField" type="text" class="form-control" value="<%= absolutePath %> " readonly>
-        <div class="input-group-append">
-            <button id="copyToClipboard" class="btn btn-outline-success" type="button" data-toggle="tooltip" data-placement="top" title="Copy to clipboard" >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
-            </button>
-        </div>
-    </div>
 </div> 
+<input id="urlField" value="<%= absolutePath %>" style="opacity: 0;" readonly>
