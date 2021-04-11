@@ -1,8 +1,14 @@
 <script>
     $("document").ready(function(){
         $(".message").hide()
+        $(".valuePresetsMessage").hide()
+
         $(".check-change").on('change', function() {
             $(".message").show()
+        })
+
+        $(".check-value-preset-change").on('change', function() {
+            $(".valuePresetsMessage").show()
         })
 
         $(".btnMinusOne").click(function(){
@@ -40,6 +46,32 @@
             document.execCommand("copy");
             alert("Copied to clipboard\nXPath: DataTable");
         });  
+
+        if($(".value-preset-row").length - 1 == 0) {
+            $("#submitRowValuePreset").hide()
+        }
+
+        $(".presetDropdown").change(function(){
+            var value = this.value;
+            $(this).siblings("input[name^=value]").val(value)
+            $(".message").show()
+        });
+
+        deleteValuePresetRowBtnListener()
+
+        $("#addValuePresetRowButton").on("click", function(){
+            $("#value-preset-container").append($("#value-preset-template").html());
+            $("#submitRowValuePreset").show()
+            deleteValuePresetRowBtnListener()
+        })
+
+        function deleteValuePresetRowBtnListener(){
+            $(".deleteValuePresetRowBtn").unbind().click(function(){
+                $(this).parent().remove()
+            })
+        }
+
+
     })
 </script>
 
@@ -55,13 +87,22 @@
             <div id="row-template">
                 <div class="input-group pb-2">
                     <input type="text" class="form-control check-change" value="<%= field[0] %>" disabled="">
-                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" value="<%= field[1] %>" placeholder="Value" required>
-                    <% if(!isNaN(field[1])) { %>
+                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" value="<%= field[1] %>" placeholder="Value" style="font-weight: bold;" required>
+                    <% for(var i = 0; i < datatable.valuePresets.length; i++) { %>
+                        <% if(field[0].toString() == datatable.valuePresets[i][0].toString()) { %>
+                            <select class="form-control presetDropdown">
+                                <% datatable.valuePresets[i][1].forEach(presetValue => { %>
+                                    <option value="<%= presetValue %>" <% if(presetValue.toString() == field[1] ) { %> selected <% } %> ><%= presetValue %></option>
+                                <% }) %>
+                            </select>
+                        <% } %>
+                    <% } %> 
+                    <% if (!isNaN(field[1])) { %>
                         <button type="button" class="btn btn-secondary btnMinusOne">-1</button>
                         <button type="button" class="btn btn-secondary btnPlusOne">+1</button>
                         <button type="button" class="btn btn-secondary btnPlusThree">+3</button>
-                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>
-                    <% } %>
+                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>    
+                    <% } %> 
                 </div>
             </div>
             <% valueFieldId++ %> 
@@ -73,19 +114,52 @@
             <small style="color: red;">Press "Submit DataTable" to save changes!</small>
         </div>
     </form> 
-    <div class="input-group pb-2">
-        <input id="urlField" type="text" class="form-control" value="<%= absolutePath %> " readonly>
-        <div class="input-group-append">
-            <button id="copyToClipboard" class="btn btn-outline-success" type="button" data-toggle="tooltip" data-placement="top" title="Copy to clipboard" >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-                    <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                    <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
-            </button>
-        </div>
-    </div> 
 </div> 
-<hr />
+<div class="input-group">
+    <input id="urlField" type="text" class="form-control" value="<%= absolutePath %> " readonly>
+    <div class="input-group-append">
+        <button id="copyToClipboard" class="btn btn-outline-success" type="button" data-toggle="tooltip" data-placement="top" title="Copy to clipboard" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+        </button>
+    </div>
+</div> 
+<hr>
+<div>
+    <h3>Row value presets</h3>
+    <small class="form-text text-muted pb-2">Seperate values by using semicolon (	&#59;)</small>
+    <form action="/datatables/rowvaluepreset/<%= datatable._id %>?_method=PUT" method="POST">
+        <div id="value-preset-container" class="check-value-preset-change">
+            <% datatable.valuePresets.forEach(valuePreset => { %>
+                <div class="input-group value-preset-row pb-2">
+                    <select class="form-control" name="presetFieldName[]">
+                        <% datatable.fields.forEach(field => { %>
+                            <option <% if(valuePreset[0].toString() == field[0] ) { %> selected <% } %> ><%= field[0] %></option>
+                        <% }) %> 
+                    </select>
+                    <input name="presetFieldValue[]" type="text" class="form-control " placeholder="Value Preset"
+                        <% var sb = new String %> 
+                        <% for(var k = 0; k < valuePreset[1].length; k++) { %> 
+                            <% sb += valuePreset[1][k] + ";" %> 
+                        <% } %> 
+                        value="<%= sb.slice(0, -1) %>"
+                        required>
+                    <button type="button" class="btn btn-warning deleteValuePresetRowBtn">Delete</button>
+                </div>
+            <% }) %>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+            <button type="button" id="addValuePresetRowButton" class="btn btn-primary">Add</button>
+            <button type="submit" id="submitRowValuePreset" class="btn btn-success">Submit Value Presets</button>
+        </div>
+        <div class="valuePresetsMessage text-center">
+            <small style="color: red;">Press "Submit Value presets" to save changes!</small>
+        </div>
+    </form>
+</div>
+<hr>
 <div>
     <h3>Share your DataTable</h3>
     <small class="form-text text-muted">Users you share your DataTable with will only be able to modify row values.</small>
@@ -115,5 +189,19 @@
     <form method="POST" action="/datatables/<%= datatable._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete your DataTable? This CAN NOT be undone!')">
         <button type="submit" class="btn btn-danger">Delete DataTable</button>
     </form>
+</div>
+
+<div style="display: none;">
+    <div id="value-preset-template">
+        <div class="input-group value-preset-row pb-2">
+            <select class="form-control" name="presetFieldName[]">
+                <% datatable.fields.forEach(field => { %>
+                    <option><%= field[0] %></option>
+                <% }) %> 
+            </select>
+            <input name="presetFieldValue[]" type="text" class="form-control" placeholder="Value Preset" required>
+            <button type="button" class="btn btn-warning deleteValuePresetRowBtn">Delete</button>
+        </div>
+    </div>
 </div>
 

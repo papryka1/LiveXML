@@ -17,6 +17,9 @@ const DatatableSchema = new mongoose.Schema({
     fields: [{
        
     }],
+    valuePresets: [{
+       
+    }],
     shared: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

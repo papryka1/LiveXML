@@ -133,6 +133,43 @@ router.put('/share/:id', auth.ensureAuthenticated, async (req, res) => {
     }
 })
 
+// Update User DataTable Row Value Presets
+router.put('/rowvaluepreset/:id', auth.ensureAuthenticated, async (req, res) => {
+    let dataTable
+    let presetFieldName = req.body.presetFieldName
+    let presetFieldValue = req.body.presetFieldValue
+    var rowsValuePresets = []
+    
+    try {
+        dataTable = await Datatables.findById(req.params.id).exec()
+        if(isEmpty(req.body.presetFieldName || req.body.presetFieldValue)) {
+            dataTable.valuePresets.remove
+            dataTable.valuePresets = rowsValuePresets
+            dataTable.markModified('valuePresets');
+            await dataTable.save()
+            res.redirect(`../${dataTable._id}`)
+        } else {
+            for (let index = 0; index < presetFieldName.length; index++) {    
+                const fldN = presetFieldName[index]
+                let fldV = presetFieldValue[index]
+                fldV = fldV.split(";")
+                for (var i = 0; i < fldV.length; i++) {
+                    fldV[i] = fldV[i].trim()
+                }
+                rowsValuePresets.push([fldN, fldV])
+            }
+            dataTable.valuePresets.remove
+            dataTable.valuePresets = rowsValuePresets
+            dataTable.markModified('valuePresets');
+            await dataTable.save()  
+            res.redirect(`../${dataTable._id}`)
+        }
+    } catch (err) {
+        console.error(err);
+        res.redirect(`/`) 
+    }
+})
+
 // Unshare other User from Datatable
 router.delete('/unshare/:tableId/user/:userId', auth.ensureAuthenticated, async (req, res) => {
     try {
@@ -154,6 +191,7 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
         if(dataTable.user.toString() == req.user._id.toString()) {
+            console.log(dataTable.valuePresets)
             const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
             await generateXML(dataTable._id)
             const absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
