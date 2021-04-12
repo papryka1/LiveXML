@@ -1,9 +1,14 @@
 <script>
     $("document").ready(function(){
         $(".message").hide()
+        $(".valuePresetsMessage").hide()
 
         $(".check-change").on('change', function() {
             $(".message").show()
+        })
+
+        $(".check-value-preset-change").on('change', function() {
+            $(".valuePresetsMessage").show()
         })
 
         $(".btnMinusOne").click(function(){
@@ -17,6 +22,13 @@
 
         $(".btnPlusOne").click(function(){
             var num = parseInt($(this).siblings("input[name^=value]").val()) + 1
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
+        })
+
+        $(".btnPlusTwo").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 2
             $(this).siblings("input[name^=value]").val(num)
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
@@ -36,25 +48,48 @@
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
+        $(".btnPlusFifteen").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 15
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
+        })
+
+
         $("#copyToClipboard").click(function(){
             $("#urlField").select();
             document.execCommand("copy");
             alert("Copied to clipboard\nXPath: DataTable");
         });  
 
+        if($(".value-preset-row").length - 1 == 0) {
+            $("#submitRowValuePreset").hide()
+        }
+
         $(".presetDropdown").change(function(){
             var value = this.value;
             $(this).siblings("input[name^=value]").val(value)
             $(".message").show()
         });
+
+        deleteValuePresetRowBtnListener()
+
+        $("#addValuePresetRowButton").on("click", function(){
+            $("#value-preset-container").append($("#value-preset-template").html());
+            $("#submitRowValuePreset").show()
+            deleteValuePresetRowBtnListener()
+        })
+
+        function deleteValuePresetRowBtnListener(){
+            $(".deleteValuePresetRowBtn").unbind().click(function(){
+                $(this).parent().remove()
+            })
+        }
     })
 </script>
 
 
-
 <h2 class="text-center mt-4">Shared DataTable</h2>
-<small class="form-text text-muted">On shared DataTables you can only modify row values.</small>
-
 <div>   
     <form action="/datatables/shared/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group pb-2">
@@ -78,8 +113,10 @@
                     <% if (!isNaN(field[1])) { %>
                         <button type="button" class="btn btn-secondary btnMinusOne">-1</button>
                         <button type="button" class="btn btn-secondary btnPlusOne">+1</button>
+                        <button type="button" class="btn btn-secondary btnPlusTwo">+2</button>
                         <button type="button" class="btn btn-secondary btnPlusThree">+3</button>
-                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>    
+                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>
+                        <button type="button" class="btn btn-secondary btnPlusFifteen">+15</button>
                     <% } %> 
                 </div>
             </div>
@@ -99,4 +136,53 @@
         </div>
     </form> 
 </div> 
+<hr>
+<div>
+    <h3>Row value presets</h3>
+    <small class="form-text text-muted pb-2">Seperate values by using semicolon (	&#59;)</small>
+    <form action="/datatables/rowvaluepreset/<%= datatable._id %>?_method=PUT" method="POST">
+        <div id="value-preset-container" class="check-value-preset-change">
+            <% datatable.valuePresets.forEach(valuePreset => { %>
+                <div class="input-group value-preset-row pb-2">
+                    <select class="form-control" name="presetFieldName[]">
+                        <% datatable.fields.forEach(field => { %>
+                            <option <% if(valuePreset[0].toString() == field[0] ) { %> selected <% } %> ><%= field[0] %></option>
+                        <% }) %> 
+                    </select>
+                    <input name="presetFieldValue[]" type="text" class="form-control " placeholder="Value Preset"
+                        <% var sb = new String %> 
+                        <% for(var k = 0; k < valuePreset[1].length; k++) { %> 
+                            <% sb += valuePreset[1][k] + ";" %> 
+                        <% } %> 
+                        value="<%= sb.slice(0, -1) %>"
+                        required>
+                    <button type="button" class="btn btn-warning deleteValuePresetRowBtn">Delete</button>
+                </div>
+            <% }) %>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="button" id="addValuePresetRowButton" class="btn btn-primary">Add</button>
+            <button type="submit" id="submitRowValuePreset" class="btn btn-success">Submit Value Presets</button>
+        </div>
+        <div class="valuePresetsMessage text-center">
+            <small style="color: red;">Press "Submit Value presets" to save changes!</small>
+        </div>
+    </form>
+</div>
+
+<div style="display: none;">
+    <div id="value-preset-template">
+        <div class="input-group value-preset-row pb-2">
+            <select class="form-control" name="presetFieldName[]">
+                <% datatable.fields.forEach(field => { %>
+                    <option><%= field[0] %></option>
+                <% }) %> 
+            </select>
+            <input name="presetFieldValue[]" type="text" class="form-control" placeholder="Value Preset" required>
+            <button type="button" class="btn btn-warning deleteValuePresetRowBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
 <input id="urlField" value="<%= absolutePath %>" style="opacity: 0;" readonly>
+

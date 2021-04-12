@@ -15,7 +15,7 @@
                 <td class="align-middle"><%= user.email %></td>
                 <td class="align-middle"><%= user.userType %></td>
                 <td class="text-center">
-                    <form method="POST" action="/admin/<%= user._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete a User? This CAN NOT be rolledback!')">
+                    <form method="POST" action="/admin/users/<%= user._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete a User? This CAN NOT be rolledback!')">
                         <button type="submit" class="<%= user._id.toString() == activeUserId.toString() ? 'btn btn-link disabled' : 'btn btn-link' %>">Delete</button>
                     </form>
                 </td>
@@ -29,7 +29,7 @@
     <thead>
         <tr>
           <th scope="col">Name</th>
-          <th scope="col">Email</th>
+          <th scope="col">Message</th>
           <th scope="col" class="text-center">Action</th>
         </tr>
     </thead>
@@ -37,9 +37,9 @@
         <% feedbacks.forEach(feedback => { %>
             <tr>
                 <th scope="row" class="align-middle"><%= feedback.user %></th>
-                <td class="align-middle"><%= feedback.content %></td>
-                <td class="align-middle">
-                    <form method="POST" action="/admin/<%= feedback._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete a User? This CAN NOT be rolledback!')">
+                <td class="align-middle text-justify"><%= feedback.content %></td>
+                <td class="align-middle text-center">
+                    <form method="POST" action="/admin/feedbacks/<%= feedback._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete this feedback? This CAN NOT be rolledback!')">
                         <button type="submit" class="btn btn-link">Delete</button>
                     </form>
                 </td>

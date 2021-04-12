@@ -94,7 +94,7 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
             const newDataTable = await datatable.save()
             res.redirect(`datatables/${newDataTable.id}`)
         } catch (err) {
-            console.log(err)
+            console.error(err)
             res.redirect('/dashboard')
         }
     } 
@@ -102,7 +102,6 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 
 // Share User DataTable
 router.put('/share/:id', auth.ensureAuthenticated, async (req, res) => {
-    //console.log("sharing for: " + req.body.shareUserEmail)
     let dataTable
     try {
         dataTable = await Datatables.findById(req.params.id).exec()
@@ -110,26 +109,23 @@ router.put('/share/:id', auth.ensureAuthenticated, async (req, res) => {
         
         // check to make sure user do not share to himself
         if(req.user._id.toString() == user[0]._id.toString()) {
+            req.flash('warning_msg', "You can not share to yourself")
             res.redirect(`../${dataTable._id}`)
         } else {
-            if(user.length > 0) {
-                try {
-                    await Datatables.updateOne(
-                        { _id:  dataTable._id },
-                        { $addToSet: { shared: user[0]._id } }
-                    )
-                } catch (err) {
-                    console.error(err);
-                    console.log("Failed Inserting!")
-                }
-            } else {
-                console.log("Share user does not exists!")
+            try {
+                await Datatables.updateOne(
+                    { _id:  dataTable._id },
+                    { $addToSet: { shared: user[0]._id } }
+                ).then(req.flash('success_msg', `DataTable Shared to ${user[0].name}`))
+            } catch (err) {
+                console.error(err);
             }
             res.redirect(`../${dataTable._id}`)
         } 
     } catch (err) {
+        req.flash('error_msg', `User with email ${req.body.shareUserEmail} does not exists`)
         console.error(err);
-        res.redirect(`/`) 
+        res.redirect('back') 
     }
 })
 
@@ -147,7 +143,8 @@ router.put('/rowvaluepreset/:id', auth.ensureAuthenticated, async (req, res) => 
             dataTable.valuePresets = rowsValuePresets
             dataTable.markModified('valuePresets');
             await dataTable.save()
-            res.redirect(`../${dataTable._id}`)
+            req.flash('success_msg', "Row value presets cleared successfully!")
+            res.redirect('back')
         } else {
             for (let index = 0; index < presetFieldName.length; index++) {    
                 const fldN = presetFieldName[index]
@@ -161,8 +158,9 @@ router.put('/rowvaluepreset/:id', auth.ensureAuthenticated, async (req, res) => 
             dataTable.valuePresets.remove
             dataTable.valuePresets = rowsValuePresets
             dataTable.markModified('valuePresets');
+            req.flash('success_msg', "Row value presets updated successfully!")
             await dataTable.save()  
-            res.redirect(`../${dataTable._id}`)
+            res.redirect('back')
         }
     } catch (err) {
         console.error(err);
@@ -191,7 +189,6 @@ router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
         if(dataTable.user.toString() == req.user._id.toString()) {
-            console.log(dataTable.valuePresets)
             const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
             await generateXML(dataTable._id)
             const absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;
