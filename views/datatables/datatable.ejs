@@ -27,6 +27,13 @@
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
+        $(".btnPlusTwo").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 2
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
+        })
+
         $(".btnPlusThree").click(function(){
             var num = parseInt($(this).siblings("input[name^=value]").val()) + 3
             $(this).siblings("input[name^=value]").val(num)
@@ -40,6 +47,14 @@
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
+
+        $(".btnPlusFifteen").click(function(){
+            var num = parseInt($(this).siblings("input[name^=value]").val()) + 15
+            $(this).siblings("input[name^=value]").val(num)
+            $(".message").show()
+            setTimeout(function(){ $('#submitBtn').click()}, 100);
+        })
+
 
         $("#copyToClipboard").click(function(){
             $("#urlField").select();
@@ -70,8 +85,6 @@
                 $(this).parent().remove()
             })
         }
-
-
     })
 </script>
 
@@ -100,8 +113,10 @@
                     <% if (!isNaN(field[1])) { %>
                         <button type="button" class="btn btn-secondary btnMinusOne">-1</button>
                         <button type="button" class="btn btn-secondary btnPlusOne">+1</button>
+                        <button type="button" class="btn btn-secondary btnPlusTwo">+2</button>
                         <button type="button" class="btn btn-secondary btnPlusThree">+3</button>
-                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>    
+                        <button type="button" class="btn btn-secondary btnPlusFive">+5</button>
+                        <button type="button" class="btn btn-secondary btnPlusFifteen">+15</button>
                     <% } %> 
                 </div>
             </div>
