@@ -36,7 +36,7 @@
     <tbody>
         <% feedbacks.forEach(feedback => { %>
             <tr>
-                <th scope="row" class="align-middle"><%= feedback.user %></th>
+                <th scope="row" class="align-middle"><%= feedback.user.name %></th>
                 <td class="align-middle text-justify"><%= feedback.content %></td>
                 <td class="align-middle text-center">
                     <form method="POST" action="/admin/feedbacks/<%= feedback._id %>?_method=DELETE" onsubmit="return confirm('Do you really want to delete this feedback? This CAN NOT be rolledback!')">
