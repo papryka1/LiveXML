@@ -56,7 +56,4 @@ router.delete('/users/:id', auth.ensureAuthenticated, async (req, res) => {
     }
 })
 
-
-
-
 module.exports = router

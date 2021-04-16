@@ -3,6 +3,7 @@ const router = express.Router()
 const auth = require('../config/auth')
 const isEmpty = require('lodash.isempty')
 var fs = require('fs');
+const dataTableLogger = require('../utils/logger');
 
 // XML Builder
 const { create } = require('xmlbuilder2', { encoding: 'utf-8' })
@@ -55,7 +56,9 @@ router.put('/shared/:id', auth.ensureAuthenticated, async (req, res) => {
             dataTable.fields[index][1] = req.body[keys[index]]
         }
         dataTable.markModified('fields');
-        await dataTable.save()  
+        await dataTable.save().then(
+            dataTableLogger.info("Shared DataTable Updated", { dataTableId: dataTable._id, userId: req.user._id, IP: req.ip})
+        )
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`../shared/${dataTable._id}`) 
     } catch (err) {
@@ -92,6 +95,7 @@ router.post('/', auth.ensureAuthenticated, async (req, res) => {
 
         try {
             const newDataTable = await datatable.save()
+            dataTableLogger.info("DataTable Created", { dataTableId: newDataTable._id, userId: req.user._id, IP: req.ip})            
             res.redirect(`datatables/${newDataTable.id}`)
         } catch (err) {
             console.error(err)
@@ -116,7 +120,10 @@ router.put('/share/:id', auth.ensureAuthenticated, async (req, res) => {
                 await Datatables.updateOne(
                     { _id:  dataTable._id },
                     { $addToSet: { shared: user[0]._id } }
-                ).then(req.flash('success_msg', `DataTable Shared to ${user[0].name}`))
+                ).then(
+                    req.flash('success_msg', `DataTable Shared to ${user[0].name}`),
+                    dataTableLogger.info("DataTable Shared", { dataTableId: dataTable._id, userId: req.user._id, sharedUserId: user[0]._id, IP: req.ip})
+                    )
             } catch (err) {
                 console.error(err);
             }
@@ -135,15 +142,16 @@ router.put('/rowvaluepreset/:id', auth.ensureAuthenticated, async (req, res) => 
     let presetFieldName = req.body.presetFieldName
     let presetFieldValue = req.body.presetFieldValue
     var rowsValuePresets = []
-    
     try {
         dataTable = await Datatables.findById(req.params.id).exec()
         if(isEmpty(req.body.presetFieldName || req.body.presetFieldValue)) {
             dataTable.valuePresets.remove
             dataTable.valuePresets = rowsValuePresets
             dataTable.markModified('valuePresets');
-            await dataTable.save()
-            req.flash('success_msg', "Row value presets cleared successfully!")
+            await dataTable.save().then(
+                dataTableLogger.info("DataTable Row Value Presets Cleared", { dataTableId: dataTable._id, userId: req.user._id, IP: req.ip}),
+                req.flash('success_msg', "Row value presets cleared successfully!")
+            )
             res.redirect('back')
         } else {
             for (let index = 0; index < presetFieldName.length; index++) {    
@@ -158,8 +166,10 @@ router.put('/rowvaluepreset/:id', auth.ensureAuthenticated, async (req, res) => 
             dataTable.valuePresets.remove
             dataTable.valuePresets = rowsValuePresets
             dataTable.markModified('valuePresets');
-            req.flash('success_msg', "Row value presets updated successfully!")
-            await dataTable.save()  
+            await dataTable.save().then(
+                dataTableLogger.info("DataTable Row Value Presets Updated", { dataTableId: dataTable._id, userId: req.user._id, IP: req.ip}),
+                req.flash('success_msg', "Row value presets updated successfully!")
+            ) 
             res.redirect('back')
         }
     } catch (err) {
@@ -176,6 +186,8 @@ router.delete('/unshare/:tableId/user/:userId', auth.ensureAuthenticated, async 
         await Datatables.updateOne(
             { _id:  dataTable._id },
             { $pull: { shared: user._id }}
+        ).then(
+            dataTableLogger.info("DataTable Unshared", { dataTableId: dataTable._id, userId: req.user._id, unsharedUserId: user._id, IP: req.ip})
         )
         res.redirect(`../../../${dataTable._id}`)  
     } catch (err) {
@@ -213,7 +225,9 @@ router.put('/:id', auth.ensureAuthenticated, async (req, res) => {
             dataTable.fields[index][1] = req.body[keys[index]]
         }
         dataTable.markModified('fields');
-        await dataTable.save()     
+        await dataTable.save().then(
+            dataTableLogger.info("DataTable Updated", { dataTableId: dataTable._id, userId: req.user._id, IP: req.ip})
+        )
         // doing full redirect so that _method=PUT would not be left in URL
         res.redirect(`${dataTable._id}`) 
     } catch {
@@ -226,7 +240,10 @@ router.delete('/:id', auth.ensureAuthenticated, async (req, res) => {
     let dataTable
     try {
         dataTable = await Datatables.findById(req.params.id).exec()
-        await dataTable.remove()
+        await dataTable.remove().then(
+            dataTableLogger.warn("DataTable Deleted", { dataTableId: dataTable._id, userId: req.user._id, IP: req.ip}),
+            req.flash('success_msg', "DataTable deleted successfully!")
+        )
         res.redirect('/dashboard')
     } catch {
         res.redirect('/dashboard')

@@ -40,7 +40,6 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
-//app.use(express.static('./public')) //no clue how it works 
 
 // Passport middleware
 app.use(passport.initialize())
@@ -83,3 +82,5 @@ app.get('*', function(req, res){
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT, console.log(`Server started on port ${PORT}`))
+
+//logger.error(`400 || ${res.statusMessage} - ${req.originalUrl} - ${req.method} - ${req.ip}`);

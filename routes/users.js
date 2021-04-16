@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
-const auth = require('../config/auth')
 
+const auth = require('../config/auth')
+const logger = require('../utils/logger');
 
 // User model
 const User = require('../models/User')
@@ -83,6 +84,7 @@ router.post('/register', (req, res) => {
                         // Save user
                         newUser.save()
                             .then(user => {
+                                //logger.info("Account created", { userID: user._id, userEmail: email, IP: req.ip})
                                 req.flash('success_msg', 'Account created!')
                                 res.redirect('login')
                             })

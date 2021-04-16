@@ -26,6 +26,8 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "string-builder": "^0.1.8",
+    "winston": "^3.3.3",
+    "winston-mongodb": "^5.0.7",
     "xmlbuilder2": "^2.4.0"
   },
   "devDependencies": {
