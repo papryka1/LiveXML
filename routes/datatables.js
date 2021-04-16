@@ -3,7 +3,7 @@ const router = express.Router()
 const auth = require('../config/auth')
 const isEmpty = require('lodash.isempty')
 var fs = require('fs');
-const dataTableLogger = require('../utils/logger');
+const {dataTableLogger, usersLogger}  = require('../utils/logger');
 
 // XML Builder
 const { create } = require('xmlbuilder2', { encoding: 'utf-8' })

@@ -14,6 +14,8 @@ const methodOverride = require('method-override')
 
 const app = express()
 
+app.set('trust proxy', true)
+
 // Passport config
 require('./config/passport')(passport)
 

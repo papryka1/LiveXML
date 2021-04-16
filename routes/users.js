@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 const passport = require('passport')
 
 const auth = require('../config/auth')
-const logger = require('../utils/logger');
+const {dataTableLogger, usersLogger} = require('../utils/logger');
 
 // User model
 const User = require('../models/User')
@@ -84,7 +84,7 @@ router.post('/register', (req, res) => {
                         // Save user
                         newUser.save()
                             .then(user => {
-                                //logger.info("Account created", { userID: user._id, userEmail: email, IP: req.ip})
+                                usersLogger.info("Account created", { userId: user._id, userEmail: email, IP: req.ip})
                                 req.flash('success_msg', 'Account created!')
                                 res.redirect('login')
                             })
@@ -107,7 +107,8 @@ router.post('/login', (req, res, next) => {
 
 // Logout Handle
 router.get('/logout', (req, res) => {
-    req.logout();
+    usersLogger.info("User log off", { userId: req.user._id, IP: req.ip})
+    req.logout()
     req.flash('success_msg', 'You are logged out')
     res.redirect('/users/login')
 });
