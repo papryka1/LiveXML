@@ -107,7 +107,7 @@ router.post('/login', (req, res, next) => {
 
 // Logout Handle
 router.get('/logout', (req, res) => {
-    usersLogger.info("User log off", { userId: req.user._id, IP: req.ip})
+    usersLogger.info("User logout", { userId: req.user._id, IP: req.ip})
     req.logout()
     req.flash('success_msg', 'You are logged out')
     res.redirect('/users/login')

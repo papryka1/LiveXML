@@ -40,11 +40,13 @@ router.post('/contact', auth.ensureAuthenticated, async (req, res) => {
         user: req.user._id,
     }) 
     try {
-        await feedback.save()
+        await feedback.save().then(
+            req.flash('success_msg', 'Feedback submited successfully')
+        )
     } catch (err) {
         console.log(err)
     }
-    res.redirect('/')
+    res.redirect('/dashboard')
 })
 
 function isEmptyObject(obj) {

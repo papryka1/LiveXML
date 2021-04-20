@@ -24,7 +24,6 @@ router.get('/', auth.ensureAuthenticated, async (req, res) => {
             return res.status(422).send({ error:"No data in the collection" })
         }
     }).populate("user")
-    console.log(feedbacks)
     res.render('admin', {allUsers: users, activeUserId: req.user._id, feedbacks: feedbacks})
 })
 

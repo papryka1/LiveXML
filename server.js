@@ -30,6 +30,7 @@ mongoose.connect(process.env.DATABASE_URL, {
 app.use(expressLayouts)
 app.set('view engine', 'ejs')
 
+
 // Bodyparser
 app.use(express.urlencoded({ extended: true }))
 
@@ -80,6 +81,7 @@ app.use('/public', require('./routes/public'))
 app.get('*', function(req, res){
     res.status(404).render('pagenotfound');
 });
+
 
 const PORT = process.env.PORT || 3000
 
