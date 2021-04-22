@@ -10,7 +10,7 @@
         </thead>
         <% userTables.forEach(datatable => { %>
             <tbody>
-                <tr>
+                <tr data-toggle="tooltip" data-placement="right" title="_id: <%= datatable._id %>">
                     <th scope="row"><a href="datatables/<%= datatable._id %>"><%= datatable.tableName %></a></th>
                     <td class="text-right"><%= datatable.dateCreated.toISOString().split('T')[0] %> </td>
                 </tr>

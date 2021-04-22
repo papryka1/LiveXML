@@ -47,8 +47,8 @@
 <div style="display: none;">
     <div id="row-template">
         <div class="input-group pb-2 ">
-            <input name="fieldName[]" type="text" class="form-control" placeholder="Field name" pattern="^[a-zA-Z].*" oninvalid="setCustomValidity('First character must be a letter')" oninput="setCustomValidity('')" required>
-            <input name="fieldValue[]" type="text" class="form-control" placeholder="Value" required>
+            <input name="fieldName[]" type="text" class="form-control" placeholder="Field name" pattern="^[A-Za-z][A-Za-z0-9]+$" oninvalid="setCustomValidity('First character must be a letter with no spaces')" oninput="setCustomValidity('')" required>
+            <textarea name="fieldValue[]" type="text" class="form-control" placeholder="Value" rows="1" style="word-break: break-word;" required></textarea>
             <button type="button" class="btn btn-warning deleteRowBtn">Delete</button>
         </div>
     </div>

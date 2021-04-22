@@ -200,7 +200,7 @@ router.delete('/unshare/:tableId/user/:userId', auth.ensureAuthenticated, async 
 router.get('/:id', auth.ensureAuthenticated, async (req, res) => {
     try {
         const dataTable = await Datatables.findById(req.params.id).exec()
-        if(dataTable.user.toString() == req.user._id.toString()) {
+        if(dataTable.user.toString() == req.user._id.toString() || req.user.userType.toString() == "admin") {
             const sharedUsers = await User.find({_id: dataTable.shared}, {name: 1})
             await generateXML(dataTable._id)
             const absolutePath = req.protocol + '://' + req.get('host')  + "/public/generated/" + dataTable._id;

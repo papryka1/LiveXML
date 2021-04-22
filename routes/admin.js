@@ -50,6 +50,7 @@ router.delete('/users/:id', auth.ensureAuthenticated, async (req, res) => {
         req.flash('success_msg', "User removed successfully!")
         res.redirect('/admin')
     } catch (err) {
+        req.flash('error_msg', "User has DataTables! You can not delete a User who has active DataTables")
         console.error(err)
         res.redirect('/admin')
     }

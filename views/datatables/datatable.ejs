@@ -12,49 +12,54 @@
         })
 
         $(".btnMinusOne").click(function(){
-            var num = parseInt($(this).siblings("input[name^=value]").val()) - 1
+            var num = parseInt($(this).siblings("textarea[name^=value]").text()) - 1
             if(num >= 0) {
-                $(this).siblings("input[name^=value]").val(num)
+                $(this).siblings("textarea[name^=value]").val(num)
             }
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusOne").click(function(){
-            var num = parseInt($(this).siblings("input[name^=value]").val()) + 1
-            $(this).siblings("input[name^=value]").val(num)
+            var num = parseInt($(this).siblings("textarea[name^=value]").text()) + 1
+            $(this).siblings("textarea[name^=value]").val(num)
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusTwo").click(function(){
-            var num = parseInt($(this).siblings("input[name^=value]").val()) + 2
-            $(this).siblings("input[name^=value]").val(num)
+            var num = parseInt($(this).siblings("textarea[name^=value]").text()) + 2
+            $(this).siblings("textarea[name^=value]").val(num)
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusThree").click(function(){
-            var num = parseInt($(this).siblings("input[name^=value]").val()) + 3
-            $(this).siblings("input[name^=value]").val(num)
+            var num = parseInt($(this).siblings("textarea[name^=value]").text()) + 3
+            $(this).siblings("textarea[name^=value]").val(num)
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusFive").click(function(){
-            var num = parseInt($(this).siblings("input[name^=value]").val()) + 5
-            $(this).siblings("input[name^=value]").val(num)
+            var num = parseInt($(this).siblings("textarea[name^=value]").text()) + 5
+            $(this).siblings("textarea[name^=value]").val(num)
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
         $(".btnPlusFifteen").click(function(){
-            var num = parseInt($(this).siblings("input[name^=value]").val()) + 15
-            $(this).siblings("input[name^=value]").val(num)
+            var num = parseInt($(this).siblings("textarea[name^=value]").text()) + 15
+            $(this).siblings("textarea[name^=value]").val(num)
             $(".message").show()
             setTimeout(function(){ $('#submitBtn').click()}, 100);
         })
 
+        $(".presetDropdown").change(function(){
+            var value = this.value;
+            $(this).siblings("textarea[name^=value]").val(value)
+            $(".message").show()
+        });
 
         $("#copyToClipboard").click(function(){
             $("#urlField").select();
@@ -65,12 +70,6 @@
         if($(".value-preset-row").length - 1 == 0) {
             $("#submitRowValuePreset").hide()
         }
-
-        $(".presetDropdown").change(function(){
-            var value = this.value;
-            $(this).siblings("input[name^=value]").val(value)
-            $(".message").show()
-        });
 
         deleteValuePresetRowBtnListener()
 
@@ -88,8 +87,16 @@
     })
 </script>
 
-<h2 class="text-center mt-4">DataTable<sup><span class="badge badge-pill badge-info">ver. <%= datatable.__v %></span></sup>
-</h2>
+<div class="d-flex d-flex justify-content-between mt-4">
+    <span></span>
+    <h2 class="">DataTable<sup><span class="badge badge-pill badge-info">ver. <%= datatable.__v %></span></sup></h2>
+    <div class="align-self-center" data-toggle="tooltip" data-placement="left" title="Place Holder">
+        <svg width="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16" >
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+        </svg>  
+    </div>  
+</div>
 <div>   
     <form action="/datatables/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group pb-2">
@@ -100,7 +107,7 @@
             <div id="row-template">
                 <div class="input-group pb-2">
                     <input type="text" class="form-control check-change" value="<%= field[0] %>" disabled="">
-                    <input name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" value="<%= field[1] %>" placeholder="Value" style="font-weight: bold;" required>
+                    <textarea name="<%= "value" + valueFieldId %>" id="<%= "value" + valueFieldId %>" type="text" class="form-control check-change" placeholder="Value" style="font-weight: bold; word-break: break-word;"  rows="1" required><%= field[1] %></textarea>
                     <% for(var i = 0; i < datatable.valuePresets.length; i++) { %>
                         <% if(field[0].toString() == datatable.valuePresets[i][0].toString()) { %>
                             <select class="form-control presetDropdown">
