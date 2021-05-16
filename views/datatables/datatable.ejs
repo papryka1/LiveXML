@@ -179,7 +179,7 @@
 <hr>
 <div>
     <h3>Share your DataTable</h3>
-    <small class="form-text text-muted">Users you share your DataTable with will only be able to modify row values.</small>
+    <small class="form-text text-muted">Users you share your DataTable with will only be able to modify row values and row value presets.</small>
     <form action="/datatables/share/<%= datatable._id %>?_method=PUT" method="POST">
         <div class="input-group py-2">
             <input name="shareUserEmail" type="email" class="form-control" placeholder="User email address" required>

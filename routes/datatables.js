@@ -23,7 +23,8 @@ router.get('/new', auth.ensureAuthenticated, (req, res) => {
 // Shared DataTables List Page
 router.get('/shared', auth.ensureAuthenticated, async (req, res) => {
     try {
-        const sharedDataTables = await Datatables.find({ shared: req.user._id }).sort({"dateCreated": -1}).exec()
+        const sharedDataTables = await Datatables.find({ shared: req.user._id }).sort({"dateCreated": -1}).populate("user").exec()
+        console.info(sharedDataTables)
         if (isEmptyObject(sharedDataTables)) {
             res.render('datatables/shared', {sharedDataTables: sharedDataTables, empty: true})
         } else {

@@ -4,6 +4,7 @@
         <thead>
             <tr>
                 <th scope="col">Table Name</th>
+                <th scope="col" class="text-right">Shared By</th>
                 <th scope="col" class="text-right">Date Created</th>
             </tr>
         </thead>
@@ -11,11 +12,12 @@
             <tbody>
                 <tr data-toggle="tooltip" data-placement="right" title="_id: <%= datatable._id %>">
                     <th scope="row"><a href="shared/<%= datatable._id %>"><%= datatable.tableName %></a></th>
-                    <td class="text-right"><%= datatable.dateCreated.toISOString().split('T')[0] %> </td>
+                    <td class="text-right"><%= datatable.user.name %></a></td>
+                    <td class="text-right"><%= new Date(datatable.dateCreated).toLocaleString("lt-LT") %> </td>
                 </tr>
             </tbody>
         <% }); %> 
-    </table>
+    </table>    
 <% } else { %>
     <h4>There are no DataTables shared with you</h4>
 <% } %> 
